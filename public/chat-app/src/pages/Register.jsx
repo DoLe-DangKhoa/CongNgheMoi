@@ -1,18 +1,19 @@
 import React, {useState,useEffect} from 'react';
 import styled from 'styled-components';
 import {Link} from 'react-router-dom';
-// import Logo from'../public/logo512.png'
+import Logo from'../assets/logo.png'
 import {ToastContainer, toast} from 'react-toastify';
-import'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { registerRoute } from '../utils/APIRoutes';
 
-const Register = () => {
+function Register(){
     const [values, setValues] = useState({
-        username:'',
-        email:'',
-        password:'',
-        confirmPassword:'',
+        username:"", 
+        email:"",
+        password :"", 
+        confirmPassword:""
+        
     });
 
     const toastOptions = {
@@ -23,24 +24,24 @@ const Register = () => {
         theme :'dark',
     };
 
-    const handleSubmit =async (event) =>{
-        event.preventDefault();
+    const handleSubmit = async (event) =>{
+        event.preventDefault(); 
       if( handleValidation()){
         console.log('in validation', registerRoute);
         const {password, confirmPassword, username, email}= values;
-        const{data} = await axios.post(registerRoute,{
-            username,
-            email,
-            password,
-           confirmPassword,
+        confirmPassword.trim();
+        const {data }= await axios.post(registerRoute,{
+            password, confirmPassword, username, email
+           
         });
+        console.log(data);
       };
     };
 
     const handleValidation=() =>{
         const {password,confirmPassword,username,email}= values;
-        if(password !== confirmPassword){
-            console.log('i am a goodboy', toast);
+        
+        if( confirmPassword !== password){
             toast.error('password and confirm password should be the same.', 
             toastOptions
             );
@@ -50,8 +51,8 @@ const Register = () => {
              toastOptions
              ); 
                      
-        } else if(password.length<8){
-            toast.error('Password should be equal or greater than 8 characters', 
+        } else if(password.length<3){
+            toast.error('Password should be equal or greater than 3 characters', 
             toastOptions
             ); 
             return false;
@@ -60,19 +61,22 @@ const Register = () => {
             toast.error('Email is required', toastOptions);
             return false;
          }
+         alert('dung r do');
          return true;
+         
+         
     };
     const handleChange = (event) =>{
         setValues({
-           ...values, [event.target.name]: event.target.values});
+           ...values, [event.target.name]: event.target.value});
     };
     return (   
-        <ToastContainer>
+        <>
             <FormContainer>
                 <form onSubmit= {(event)=> handleSubmit(event)} >
                     <div className='brand'>
-                        {/* <img src={Logo} alt='Logo' /> */}
-                        <h1>snappy</h1>
+                        <img src={Logo} alt='Logo' />
+                        <h1>OVER THINK</h1>
                     </div>
                     <input type="text" placeholder='UserName' name='username' 
                     onChange={(e) => handleChange(e)}/>
@@ -83,7 +87,7 @@ const Register = () => {
                     <input type="password" placeholder='Password' name='password' 
                     onChange={(e) => handleChange(e)}/>
 
-                    <input type="password" placeholder='Confirm Password ' name='ConfirmPassword' 
+                    <input type="Password" placeholder='Confirm Password ' name='confirmPassword' 
                     onChange={(e) => handleChange(e)}/>
 
                     <button type="submit">Create User</button>
@@ -92,8 +96,8 @@ const Register = () => {
                     </span>
                 </form>
             </FormContainer>
-        </ToastContainer>    
-            
+            <ToastContainer />
+            </>        
     )        
 };
 const FormContainer = styled.div`
