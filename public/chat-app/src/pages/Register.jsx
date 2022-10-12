@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from 'react';
 import styled from 'styled-components';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import Logo from'../assets/logo.png'
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,12 +8,12 @@ import axios from 'axios';
 import { registerRoute } from '../utils/APIRoutes';
 
 function Register(){
+    const navigate = useNavigate();
     const [values, setValues] = useState({
         username:"", 
         email:"",
         password :"", 
-        confirmPassword:""
-        
+        confirmPassword:""        
     });
 
     const toastOptions = {
@@ -28,16 +28,20 @@ function Register(){
         event.preventDefault(); 
       if( handleValidation()){
         console.log('in validation', registerRoute);
-        const {password, confirmPassword, username, email}= values;
-        confirmPassword.trim();
+        const {password, username, email}= values;
         const {data }= await axios.post(registerRoute,{
-            password, confirmPassword, username, email
-           
+            username,
+            email,
+            password,                
         });
-        console.log(data);
-      };
-    };
-
+        if( data.status === false){
+            toast.error(data.msg, toastOptions);
+        }if( data.status === true){ 
+            localStorage.setItem('chat-app-user',JSON.stringify(data.user));
+            navigate('/');
+        }
+    }   
+}
     const handleValidation=() =>{
         const {password,confirmPassword,username,email}= values;
         
@@ -61,7 +65,6 @@ function Register(){
             toast.error('Email is required', toastOptions);
             return false;
          }
-         alert('dung r do');
          return true;
          
          
@@ -87,12 +90,12 @@ function Register(){
                     <input type="password" placeholder='Password' name='password' 
                     onChange={(e) => handleChange(e)}/>
 
-                    <input type="Password" placeholder='Confirm Password ' name='confirmPassword' 
+                    <input type="password" placeholder='Confirm Password ' name='confirmPassword' 
                     onChange={(e) => handleChange(e)}/>
 
                     <button type="submit">Create User</button>
-                    <span>Already have an account? 
-                    <Link to = "/login">Login</Link>
+                    <span>Already have an account ? 
+                    <Link to = "/login"> Login</Link>
                     </span>
                 </form>
             </FormContainer>
