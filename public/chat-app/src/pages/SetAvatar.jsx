@@ -1,7 +1,7 @@
 import React, {useState,useEffect} from 'react';
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
-import loader from'../assets/loader.jpg'
+import loader from'../assets/loader.gif'
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -10,7 +10,7 @@ import {Buffer} from 'buffer';
 
 function SetAvatar() {
     const api = 'https://api.multiavatar.com/45678945';
-    const navigate = useNavigate();
+    const navigate = useNavigate(); 
 
     const [avatars, setAvatars] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +23,24 @@ function SetAvatar() {
         draggable :true,
         theme :'dark',
     };
-    const setProfilePicture = async () => {};
+    const setProfilePicture = async () => {
+        if(selectedAvatar === undefined) {
+            toast.error('Please select an Avatar',toastOptions);
+        }else{
+            const user = await JSON.parse(localStorage.getItem('chat-app-user'));
+            const {data} = await axios.post(`${setAvatarRoute}/${user._id}`,{
+                image: avatars[selectedAvatar], 
+            });
+            if(data.isSet){
+                user.isAvatarImageSet = true;
+                user.avatarImage = data.image;
+                localStorage.setItem('chat-app-user',JSON.stringify(user));
+                navigate('/');
+            }else{
+                toast.error('Error setting avatar, please try again',toastOptions);
+            }
+        }
+    };
     useEffect( () => {
         const data =[];
         async function sendImage(){
@@ -40,7 +57,11 @@ function SetAvatar() {
     },[]);
   return (
     <>
-        <Container>
+    {
+        isLoading? <Container>
+            <img src={loader} alt="loader" className='loader' />
+        </Container> :(
+            <Container>
             <div className="title-container">
                 <h1>Choose an avatar as your profile picture</h1>
             </div>
@@ -61,7 +82,8 @@ function SetAvatar() {
             </div>
            <button className='submit-btn' onClick={setProfilePicture}>Set as Profile Picture</button>   
         </Container> 
-        
+        )           
+    } 
         <ToastContainer />
     </>
     

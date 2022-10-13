@@ -1,11 +1,10 @@
-const { default: SetAvatar } = require("../../public/chat-app/src/pages/SetAvatar");
-const {register, login} = require("../controllers/usersController");
 
+const {register, login, setAvatar} = require("../controllers/usersController");
 
 const router = require('express').Router();
 
 router.post("/register",register);
 router.post("/login",login);
-router.post("/setAvatar",SetAvatar);
+router.post("/setAvatar/:id",setAvatar);
 module.exports = router;
 
